@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimório de Dados Arcanos</title>
+    <style>
+        :root {
+            --primary: #950101; /* Vermelho Sangue */
+            --secondary: #3d0000;
+            --bg: #0a0a0a;
+            --text: #e0e0e0;
+            --gold: #d4af37;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('https://www.transparenttextures.com/patterns/dark-leather.png');
+            color: var(--text);
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            background: #1a1a1a;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 25px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 0 30px rgba(149, 1, 1, 0.5);
+            position: relative;
+        }
+
+        /* Detalhe Medieval */
+        .container::before {
+            content: "⚔️";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg);
+            padding: 0 15px;
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid var(--primary);
+            color: white;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 var(--secondary);
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #000;
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            text-align: center;
+            min-height: 80px;
+        }
+
+        .total {
+            font-size: 3rem;
+            color: var(--primary);
+            font-weight: bold;
+            display: block;
+        }
+
+        .critico {
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .dice-icon {
+            display: block;
+            margin: 10px auto;
+            max-width: 60px;
+            filter: sepia(1) saturate(5) hue-rotate(-50deg); /* Deixa a imagem avermelhada */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Grimório de Dados</h1>
+    
+    <img src="https://cdn-icons-png.flaticon.com/512/3257/3257074.png" class="dice-icon" alt="Dado de RPG">
+
+    <div class="grid">
+        <div class="input-group">
+            <label>Quantidade</label>
+            <input type="number" id="qty" value="1" min="1">
+        </div>
+        <div class="input-group">
+            <label>Tipo de Dado</label>
+            <select id="dice">
+                <option value="2">D2 (Moeda)</option>
+                <option value="4">D4 (Adaga)</option>
+                <option value="6">D6 (Machado)</option>
+                <option value="8">D8 (Espada)</option>
+                <option value="10">D10 (Massa)</option>
+                <option value="12">D12 (Grande Machado)</option>
+                <option value="20" selected>D20 (Destino)</option>
+                <option value="100">D100 (Calamidade)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Modificador de Força/Magia</label>
+        <input type="number" id="mod" value="0">
+    </div>
+
+    <button onclick="lancarDados()">Lançar Dados 🎲</button>
+
+    <div id="result">
+        <span style="color: #666;">Os deuses aguardam sua jogada...</span>
+    </div>
+</div>
+
+<script>
+    function lancarDados() {
+        const qty = parseInt(document.getElementById('qty').value);
+        const sides = parseInt(document.getElementById('dice').value);
+        const mod = parseInt(document.getElementById('mod').value);
+        
+        let rolls = [];
+        let sum = 0;
+        let teveCritico = false;
+
+        for (let i = 0; i < qty; i++) {
+            let r1 = Math.floor(Math.random() * sides) + 1;
+            
+            // LÓGICA DE SORTE AUMENTADA:
+            // Se o dado for menor que 50% do valor máximo, rola de novo e pega o maior.
+            let resultadoFinal;
+            if (r1 <= sides / 2) {
+                let r2 = Math.floor(Math.random() * sides) + 1;
+                resultadoFinal = Math.max(r1, r2);
+            } else {
+                resultadoFinal = r1;
+            }
+
+            if (resultadoFinal === sides) teveCritico = true;
+            rolls.push(resultadoFinal);
+            sum += resultadoFinal;
+        }
+
+        const totalFinal = sum + mod;
+        const resultArea = document.getElementById('result');
+
+        resultArea.innerHTML = `
+            <div style="font-size: 0.9rem; color: #888; margin-bottom: 5px;">
+                Rolagens: ${rolls.join(' + ')} | Mod: ${mod >= 0 ? '+' : ''}${mod}
+            </div>
+            <span class="total ${teveCritico ? 'critico' : ''}">
+                ${totalFinal}
+            </span>
+            ${teveCritico ? '<div style="color:var(--gold); font-weight:bold;">SUCESSO CRÍTICO!</div>' : ''}
+        `;
+    }
+</script>
+
+</body>
+</html>
