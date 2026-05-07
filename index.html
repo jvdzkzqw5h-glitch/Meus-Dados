@@ -5,295 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RPGS MALÉFICOS DO REISS</title>
     <style>
-        :root {
-            --gold: #d4af37;
-            --dark-red: #4a0000;
-        }
-
-        body {
-            background-color: #000;
-            margin: 0;
-            font-family: 'Palatino', 'Georgia', serif;
-            display: flex;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 450px;
-            min-height: 100vh;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid #333;
-        }
-
-        /* Banner de Título */
-        .banner {
-            background: linear-gradient(to bottom, #7a0000, #3d0000);
-            padding: 25px 10px;
-            text-align: center;
-            border-bottom: 3px solid var(--gold);
-            z-index: 10;
-        }
-
-        .banner h1 {
-            color: var(--gold);
-            margin: 0;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 2px #000;
-        }
-
-        /* Abas Estilo Metal */
-        .tabs {
-            display: flex;
-            background: #222;
-            padding: 5px;
-            gap: 5px;
-            z-index: 10;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            background: linear-gradient(to bottom, #555, #222);
-            color: var(--gold);
-            border: 1px solid #444;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .tab.active {
-            background: linear-gradient(to bottom, #d4af37, #8a6d05);
-            color: #000;
-            box-shadow: inset 0 0 5px #fff;
-        }
-
-        /* Área de Conteúdo com Fundos Dinâmicos */
-        .main-content {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .page {
-            flex: 1;
-            padding: 20px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* FUNDOS ESPECÍFICOS */
-        #tab-corpo { 
-            /* Imagem 2: Vórtice/Abismo */
-            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://raw.githubusercontent.com/jvdzkzqw5h-glitch/Meus-Dados/main/image2.png'); 
-        }
+        :root { --gold: #d4af37; --dark-red: #4a0000; --crit: #ff0000; }
+        body { background: #000; margin: 0; font-family: 'Palatino', serif; color: #fff; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 450px; min-height: 100vh; display: flex; flex-direction: column; margin: auto; }
         
-        #tab-dados { 
-            /* Imagem 1: Arte Abstrata P&B */
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://raw.githubusercontent.com/jvdzkzqw5h-glitch/Meus-Dados/main/image1.png'); 
-        }
+        .banner { background: linear-gradient(#7a0000, #3d0000); padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
+        .banner h1 { color: var(--gold); margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
         
-        #tab-notas { 
-            /* Imagem 3: Cidade Pôr do Sol */
-            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://raw.githubusercontent.com/jvdzkzqw5h-glitch/Meus-Dados/main/image3.png'); 
-        }
+        .tabs { display: flex; background: #111; padding: 5px; gap: 5px; }
+        .tab { flex: 1; padding: 12px; text-align: center; background: #333; color: var(--gold); border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .tab.active { background: var(--gold); color: #000; }
 
-        /* Transparência para leitura */
-        .glass-panel {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--gold);
-            padding: 15px;
-            border-radius: 10px;
-            backdrop-filter: blur(3px);
-            margin-bottom: 15px;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .page { flex: 1; padding: 20px; background-size: cover; background-position: center; display: none; }
+        .page.active { display: flex; flex-direction: column; }
 
-        /* Barra de Vida Superior */
-        .top-hp-bar { text-align: center; margin-bottom: 20px; }
-        .progress-frame {
-            width: 100%; height: 25px; background: #222;
-            border: 2px solid var(--gold); border-radius: 15px; overflow: hidden;
-        }
-        #hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, #900, #27ae60); transition: width 0.4s; }
+        /* FUNDOS DAS SUAS IMAGENS */
+        #tab-dados { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('image1.png'); }
+        #tab-corpo { background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('image2.png'); }
+        #tab-notas { background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('image3.png'); }
 
-        /* Boneco Central */
-        .body-canvas {
-            display: flex; justify-content: center; align-items: center;
-            position: relative; height: 320px;
-        }
-        .mannequin { height: 280px; filter: drop-shadow(0 0 10px #000); }
-        .controls-left, .controls-right { position: absolute; display: flex; flex-direction: column; gap: 20px; }
-        .controls-left { left: 0; } .controls-right { right: 0; }
+        .glass { background: rgba(0,0,0,0.75); border: 1px solid var(--gold); padding: 15px; border-radius: 10px; backdrop-filter: blur(5px); }
+        .hp-bar { width: 100%; height: 20px; background: #222; border: 1px solid var(--gold); border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, #900, #27ae60); transition: 0.4s; }
+        
+        .body-canvas { display: flex; justify-content: center; align-items: center; position: relative; height: 300px; margin-top: 10px; }
+        .mannequin { height: 260px; filter: drop-shadow(0 0 10px #000); }
+        .side-ctrls { position: absolute; display: flex; flex-direction: column; gap: 15px; }
+        .m-box { background: #000; border: 1px solid var(--gold); padding: 5px; border-radius: 5px; text-align: center; width: 65px; font-size: 0.6rem; }
+        .b-m { background: #400; color: #fff; border: 1px solid var(--gold); width: 22px; cursor: pointer; border-radius: 3px; }
 
-        .member-box {
-            background: rgba(0,0,0,0.8); border: 1px solid var(--gold);
-            padding: 8px; border-radius: 5px; text-align: center; width: 80px;
-        }
-        .member-box label { font-size: 0.7rem; font-weight: bold; color: var(--gold); display: block; margin-bottom: 5px; }
-        .btn-mini { background: #3d0000; color: #fff; border: 1px solid var(--gold); width: 25px; height: 25px; border-radius: 3px; }
-        .member-val { font-weight: bold; font-family: monospace; width: 25px; display: inline-block; }
-
-        /* Inputs e Botões */
-        .input-box {
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.8);
-            border: 1px solid var(--gold); color: #fff; margin-bottom: 10px; border-radius: 5px;
-        }
-        .roll-button {
-            width: 100%; padding: 15px; background: var(--dark-red); color: var(--gold);
-            border: 2px solid var(--gold); font-weight: bold; text-transform: uppercase; border-radius: 5px;
-        }
-        #result-display { text-align: center; font-size: 3rem; color: var(--gold); text-shadow: 2px 2px 10px #000; margin-top: 15px; }
-
-        .hidden { display: none; }
+        .in-box { width: 100%; padding: 10px; background: #000; border: 1px solid var(--gold); color: #fff; margin: 5px 0; box-sizing: border-box; border-radius: 5px; }
+        .btn-r { width: 100%; padding: 15px; background: var(--dark-red); color: var(--gold); border: 1px solid var(--gold); font-weight: bold; margin-top: 10px; border-radius: 5px; text-transform: uppercase; }
+        
+        #res { text-align:center; font-size:5rem; color:var(--gold); margin-top:20px; transition: 0.3s; text-shadow: 2px 2px 15px #000; }
+        .critical { color: var(--crit) !important; text-shadow: 0 0 25px #f00 !important; transform: scale(1.2); animation: pulse 0.5s infinite alternate; }
+        
+        @keyframes pulse { from { transform: scale(1.1); } to { transform: scale(1.25); } }
     </style>
 </head>
 <body>
-
-<div class="app-container">
-    <div class="banner">
-        <h1>RPGS MALÉFICOS DO REISS</h1>
-    </div>
-
-    <div class="tabs">
-        <div class="tab active" onclick="showTab('tab-corpo', this)">CORPO</div>
-        <div class="tab" onclick="showTab('tab-dados', this)">DADOS</div>
-        <div class="tab" onclick="showTab('tab-notas', this)">ANOTAÇÕES</div>
-    </div>
-
-    <div class="main-content">
-        <div id="tab-corpo" class="page">
-            <div class="glass-panel">
-                <div class="top-hp-bar">
-                    <label>❤️ SAÚDE TOTAL: <span id="hp-percent">100</span>%</label>
-                    <div class="progress-frame">
-                        <div id="hp-fill"></div>
-                    </div>
-                </div>
-
-                <div class="body-canvas">
-                    <div class="controls-left">
-                        <div class="member-box"><label>CABEÇA</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('head', -1)">-</button>
-                            <span class="member-val" id="head">10</span><button class="btn-mini" onclick="upd('head', 1)">+</button></div>
+    <div class="app-container">
+        <div class="banner"><h1>RPGS MALÉFICOS DO REISS</h1></div>
+        <div class="tabs">
+            <div class="tab active" onclick="t('tab-corpo', this)">CORPO</div>
+            <div class="tab" onclick="t('tab-dados', this)">DADOS</div>
+            <div class="tab" onclick="t('tab-notas', this)">NOTAS</div>
+        </div>
+        <div class="main-content">
+            <div id="tab-corpo" class="page active">
+                <div class="glass">
+                    <center>❤️ VIDA: <span id="ht">100</span>%</center>
+                    <div class="hp-bar"><div id="hp-fill"></div></div>
+                    <div class="body-canvas">
+                        <div class="side-ctrls" style="left:0">
+                            <div class="m-box">CAB<br><button class="b-m" onclick="u('h',-1)">-</button> <span id="h">10</span> <button class="b-m" onclick="u('h',1)">+</button></div>
+                            <div class="m-box">B.E<br><button class="b-m" onclick="u('le',-1)">-</button> <span id="le">10</span> <button class="b-m" onclick="u('le',1)">+</button></div>
+                            <div class="m-box">P.E<br><button class="b-m" onclick="u('pe',-1)">-</button> <span id="pe">10</span> <button class="b-m" onclick="u('pe',1)">+</button></div>
                         </div>
-                        <div class="member-box"><label>BRAÇO E.</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('larm', -1)">-</button>
-                            <span class="member-val" id="larm">10</span><button class="btn-mini" onclick="upd('larm', 1)">+</button></div>
-                        </div>
-                        <div class="member-box"><label>PERNA E.</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('lleg', -1)">-</button>
-                            <span class="member-val" id="lleg">10</span><button class="btn-mini" onclick="upd('lleg', 1)">+</button></div>
-                        </div>
-                    </div>
-
-                    <svg class="mannequin" viewBox="0 0 100 200">
-                        <circle cx="50" cy="30" r="15" fill="#8d6e63" />
-                        <rect x="35" y="48" width="30" height="70" rx="5" fill="#8d6e63" />
-                        <rect x="15" y="50" width="15" height="60" rx="5" fill="#8d6e63" />
-                        <rect x="70" y="50" width="15" height="60" rx="5" fill="#8d6e63" />
-                        <rect x="35" y="125" width="12" height="70" rx="5" fill="#8d6e63" />
-                        <rect x="53" y="125" width="12" height="70" rx="5" fill="#8d6e63" />
-                    </svg>
-
-                    <div class="controls-right">
-                        <div class="member-box"><label>TRONCO</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('torso', -1)">-</button>
-                            <span class="member-val" id="torso">10</span><button class="btn-mini" onclick="upd('torso', 1)">+</button></div>
-                        </div>
-                        <div class="member-box"><label>BRAÇO D.</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('rarm', -1)">-</button>
-                            <span class="member-val" id="rarm">10</span><button class="btn-mini" onclick="upd('rarm', 1)">+</button></div>
-                        </div>
-                        <div class="member-box"><label>PERNA D.</label>
-                            <div class="btn-group"><button class="btn-mini" onclick="upd('rleg', -1)">-</button>
-                            <span class="member-val" id="rleg">10</span><button class="btn-mini" onclick="upd('rleg', 1)">+</button></div>
+                        <svg class="mannequin" viewBox="0 0 100 200"><circle cx="50" cy="30" r="15" fill="#8d6e63"/><rect x="35" y="48" width="30" height="70" fill="#8d6e63"/><rect x="15" y="50" width="15" height="50" fill="#8d6e63"/><rect x="70" y="50" width="15" height="50" fill="#8d6e63"/><rect x="35" y="125" width="12" height="60" fill="#8d6e63"/><rect x="53" y="125" width="12" height="60" fill="#8d6e63"/></svg>
+                        <div class="side-ctrls" style="right:0">
+                            <div class="m-box">TRON<br><button class="b-m" onclick="u('t',-1)">-</button> <span id="t">10</span> <button class="b-m" onclick="u('t',1)">+</button></div>
+                            <div class="m-box">B.D<br><button class="b-m" onclick="u('rd',-1)">-</button> <span id="rd">10</span> <button class="b-m" onclick="u('rd',1)">+</button></div>
+                            <div class="m-box">P.D<br><button class="b-m" onclick="u('pd',-1)">-</button> <span id="pd">10</span> <button class="b-m" onclick="u('pd',1)">+</button></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="tab-dados" class="page hidden">
-            <div class="glass-panel">
-                <label>Quant.</label>
-                <input type="number" id="qty" class="input-box" value="1">
-                <label>Dado</label>
-                <select id="dice" class="input-box">
-                    <option value="2">D2</option><option value="4">D4</option>
-                    <option value="6">D6</option><option value="8">D8</option>
-                    <option value="20" selected>D20</option><option value="100">D100</option>
-                </select>
-                <label>Modificador</label>
-                <input type="number" id="mod" class="input-box" value="0">
-                <button class="roll-button" onclick="rolar()">GIRAR 🎲</button>
-                <div id="result-display">0</div>
+            <div id="tab-dados" class="page">
+                <div class="glass">
+                    <label>Quantidade</label><input type="number" id="q" class="in-box" value="1">
+                    <label>Tipo de Dado</label>
+                    <select id="d" class="in-box">
+                        <option value="2">D2</option><option value="4">D4</option><option value="6">D6</option>
+                        <option value="8">D8</option><option value="10">D10</option><option value="12">D12</option>
+                        <option value="20" selected>D20</option><option value="100">D100</option>
+                    </select>
+                    <button class="btn-r" onclick="rolar()">GIRAR 🎲</button>
+                    <h1 id="res">0</h1>
+                </div>
             </div>
-        </div>
-
-        <div id="tab-notas" class="page hidden">
-            <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
-                <textarea id="notas" class="input-box" style="flex: 1; resize: none;" placeholder="Escreva aqui..."></textarea>
-                <button class="roll-button" onclick="salvar()">SALVAR 📜</button>
+            <div id="tab-notas" class="page">
+                <div class="glass" style="flex:1; display:flex; flex-direction:column;">
+                    <textarea id="nt" class="in-box" style="flex:1; resize:none" placeholder="Escreva aqui..."></textarea>
+                    <button class="btn-r" onclick="save()">SALVAR 📜</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    let hp = { head: 10, torso: 10, larm: 10, rarm: 10, lleg: 10, rleg: 10 };
-
-    function showTab(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function upd(member, val) {
-        if(hp[member] + val >= 0 && hp[member] + val <= 10) {
-            hp[member] += val;
-            document.getElementById(member).innerText = hp[member];
-            let total = Object.values(hp).reduce((a, b) => a + b, 0);
-            let percent = (total / 60) * 100;
-            document.getElementById('hp-fill').style.width = percent + "%";
-            document.getElementById('hp-percent').innerText = Math.round(percent);
+    <script>
+        let p = {h:10, t:10, le:10, rd:10, pe:10, pd:10};
+        function t(id, e) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            e.classList.add('active');
         }
-    }
-
-    function rolar() {
-        let q = parseInt(document.getElementById('qty').value);
-        let d = parseInt(document.getElementById('dice').value);
-        let m = parseInt(document.getElementById('mod').value);
-        let sum = 0;
-        for(let i=0; i<q; i++) {
-            let r = Math.floor(Math.random() * d) + 1;
-            if(r < d * 0.4) r = Math.max(r, Math.floor(Math.random() * d) + 1);
-            sum += r;
+        function u(m, v) {
+            if(p[m]+v >= 0 && p[m]+v <= 10) {
+                p[m]+=v; document.getElementById(m).innerText = p[m];
+                let c = Object.values(p).reduce((a,b)=>a+b,0);
+                let x = Math.round((c/60)*100);
+                document.getElementById('hp-fill').style.width = x+"%";
+                document.getElementById('ht').innerText = x;
+            }
         }
-        document.getElementById('result-display').innerText = sum + m;
-    }
+        function rolar() {
+            let s = 0; 
+            let q = parseInt(document.getElementById('q').value); 
+            let d = parseInt(document.getElementById('d').value);
+            let resDisplay = document.getElementById('res');
+            let isCrit = false;
 
-    function salvar() {
-        localStorage.setItem('notas_rpg', document.getElementById('notas').value);
-        alert('Grimório atualizado!');
-    }
+            for(let i=0; i<q; i++) {
+                // Lógica "Roubada": Rola 2 vezes e pega o maior (Vantagem)
+                let r1 = Math.floor(Math.random()*d)+1;
+                let r2 = Math.floor(Math.random()*d)+1;
+                let finalR = Math.max(r1, r2);
+                
+                if(finalR === d) isCrit = true;
+                s += finalR;
+            }
 
-    window.onload = () => {
-        if(localStorage.getItem('notas_rpg')) document.getElementById('notas').value = localStorage.getItem('notas_rpg');
-    };
-</script>
+            resDisplay.innerText = s;
+            if(isCrit) resDisplay.classList.add('critical');
+            else resDisplay.classList.remove('critical');
+        }
+        function save() { localStorage.setItem('rpg_nt', document.getElementById('nt').value); alert('Anotado!'); }
+        window.onload = () => { if(localStorage.getItem('rpg_nt')) document.getElementById('nt').value = localStorage.getItem('rpg_nt'); }
+    </script>
 </body>
 </html>
