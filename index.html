@@ -20,7 +20,6 @@
         .page { flex: 1; padding: 20px; background-size: cover; background-position: center; display: none; }
         .page.active { display: flex; flex-direction: column; }
 
-        /* FUNDOS DAS SUAS IMAGENS */
         #tab-dados { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('image1.png'); }
         #tab-corpo { background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('image2.png'); }
         #tab-notas { background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('image3.png'); }
@@ -74,7 +73,10 @@
             </div>
             <div id="tab-dados" class="page">
                 <div class="glass">
-                    <label>Quantidade</label><input type="number" id="q" class="in-box" value="1">
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;"><label>Dados</label><input type="number" id="q" class="in-box" value="1"></div>
+                        <div style="flex: 1;"><label>Modificador</label><input type="number" id="m" class="in-box" value="0"></div>
+                    </div>
                     <label>Tipo de Dado</label>
                     <select id="d" class="in-box">
                         <option value="2">D2</option><option value="4">D4</option><option value="6">D6</option>
@@ -87,7 +89,7 @@
             </div>
             <div id="tab-notas" class="page">
                 <div class="glass" style="flex:1; display:flex; flex-direction:column;">
-                    <textarea id="nt" class="in-box" style="flex:1; resize:none" placeholder="Escreva aqui..."></textarea>
+                    <textarea id="nt" class="in-box" style="flex:1; resize:none" placeholder="Anotações importantes..."></textarea>
                     <button class="btn-r" onclick="save()">SALVAR 📜</button>
                 </div>
             </div>
@@ -112,26 +114,25 @@
         }
         function rolar() {
             let s = 0; 
-            let q = parseInt(document.getElementById('q').value); 
+            let q = parseInt(document.getElementById('q').value) || 1; 
             let d = parseInt(document.getElementById('d').value);
+            let mod = parseInt(document.getElementById('m').value) || 0;
             let resDisplay = document.getElementById('res');
             let isCrit = false;
 
             for(let i=0; i<q; i++) {
-                // Lógica "Roubada": Rola 2 vezes e pega o maior (Vantagem)
                 let r1 = Math.floor(Math.random()*d)+1;
                 let r2 = Math.floor(Math.random()*d)+1;
                 let finalR = Math.max(r1, r2);
-                
                 if(finalR === d) isCrit = true;
                 s += finalR;
             }
 
-            resDisplay.innerText = s;
+            resDisplay.innerText = s + mod;
             if(isCrit) resDisplay.classList.add('critical');
             else resDisplay.classList.remove('critical');
         }
-        function save() { localStorage.setItem('rpg_nt', document.getElementById('nt').value); alert('Anotado!'); }
+        function save() { localStorage.setItem('rpg_nt', document.getElementById('nt').value); alert('Salvo!'); }
         window.onload = () => { if(localStorage.getItem('rpg_nt')) document.getElementById('nt').value = localStorage.getItem('rpg_nt'); }
     </script>
 </body>
