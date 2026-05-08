@@ -5,44 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RPGS MALÉFICOS DO REISS</title>
     <style>
-        :root { --gold: #d4af37; --dark-red: #4a0000; --crit-purple: #a020f0; }
+        :root { --gold: #d4af37; --dark-red: #4a0000; --crit-purple: #a020f0; --glass-bg: rgba(0,0,0,0.85); }
         body { background: #000; margin: 0; font-family: 'Palatino', serif; color: #fff; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 450px; min-height: 100vh; display: flex; flex-direction: column; margin: auto; }
         
-        .banner { background: linear-gradient(#7a0000, #3d0000); padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
-        .banner h1 { color: var(--gold); margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        .banner { background: linear-gradient(#7a0000, #3d0000); padding: 15px; text-align: center; border-bottom: 2px solid var(--gold); }
+        .banner h1 { color: var(--gold); margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
         
-        .tabs { display: flex; background: #111; padding: 5px; gap: 5px; }
-        .tab { flex: 1; padding: 12px; text-align: center; background: #333; color: var(--gold); border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .tabs { display: flex; background: #111; padding: 5px; gap: 3px; overflow-x: auto; }
+        .tab { flex: 1; padding: 10px 5px; text-align: center; background: #222; color: var(--gold); border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; white-space: nowrap; }
         .tab.active { background: var(--gold); color: #000; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .page { flex: 1; padding: 20px; background-size: cover; background-position: center; display: none; }
+        .page { flex: 1; padding: 15px; background-size: cover; background-position: center; display: none; }
         .page.active { display: flex; flex-direction: column; }
 
-        /* FUNDOS COM AS SUAS IMAGENS DO REPOSITÓRIO */
-        #tab-corpo { background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('image2.png'); }
-        #tab-dados { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('image1.png'); }
-        #tab-notas { background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('image3.png'); }
+        #tab-corpo { background-image: url('image2.png'); }
+        #tab-dados { background-image: url('image1.png'); }
+        #tab-itens { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('image3.png'); }
+        #tab-notas { background-image: url('image3.png'); }
 
-        .glass { background: rgba(0,0,0,0.75); border: 1px solid var(--gold); padding: 15px; border-radius: 10px; backdrop-filter: blur(5px); }
-        .hp-bar { width: 100%; height: 20px; background: #222; border: 1px solid var(--gold); border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .glass { background: var(--glass-bg); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; backdrop-filter: blur(8px); }
+        .hp-bar { width: 100%; height: 18px; background: #222; border: 1px solid var(--gold); border-radius: 10px; overflow: hidden; margin: 8px 0; }
         #hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, #900, #27ae60); transition: 0.4s; }
         
-        /* ESTRUTURA DOS MEMBROS RESTAURADA */
-        .body-canvas { display: flex; justify-content: center; align-items: center; position: relative; height: 350px; margin-top: 10px; }
-        .mannequin { height: 280px; filter: drop-shadow(0 0 10px #000); }
-        .side-ctrls { position: absolute; display: flex; flex-direction: column; gap: 10px; }
-        .m-box { background: #000; border: 1px solid var(--gold); padding: 5px; border-radius: 5px; text-align: center; width: 70px; font-size: 0.65rem; }
-        .b-m { background: #400; color: #fff; border: 1px solid var(--gold); width: 24px; height: 24px; cursor: pointer; border-radius: 3px; font-weight: bold; }
+        /* Inventário Estilo RPG */
+        .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .inv-slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .slot { border: 1px solid var(--gold); background: rgba(255,255,255,0.05); aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.5rem; color: var(--gold); }
+        .buff-list { display: flex; flex-direction: column; gap: 8px; }
+        .buff-item { font-size: 0.7rem; display: flex; justify-content: space-between; align-items: center; }
+        .buff-input { width: 45px; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; border-radius: 3px; font-size: 0.7rem; }
 
-        .in-box { width: 100%; padding: 10px; background: #000; border: 1px solid var(--gold); color: #fff; margin: 5px 0; box-sizing: border-box; border-radius: 5px; }
-        .btn-r { width: 100%; padding: 15px; background: var(--dark-red); color: var(--gold); border: 1px solid var(--gold); font-weight: bold; margin-top: 10px; border-radius: 5px; text-transform: uppercase; }
+        /* Dados e Animação */
+        .in-box { width: 100%; padding: 8px; background: #000; border: 1px solid var(--gold); color: #fff; margin: 4px 0; border-radius: 5px; font-size: 0.9rem; }
+        .btn-r { width: 100%; padding: 12px; background: var(--dark-red); color: var(--gold); border: 1px solid var(--gold); font-weight: bold; margin-top: 8px; border-radius: 5px; text-transform: uppercase; }
+        #res { text-align:center; font-size:4.5rem; color:var(--gold); margin: 15px 0; transition: 0.2s; min-height: 100px; }
         
-        #res { text-align:center; font-size:5rem; color:var(--gold); margin-top:20px; transition: 0.3s; text-shadow: 2px 2px 15px #000; }
-        .critical { color: var(--crit-purple) !important; text-shadow: 0 0 25px #a020f0 !important; transform: scale(1.15); animation: pulse 0.5s infinite alternate; }
-        
-        @keyframes pulse { from { transform: scale(1.1); } to { transform: scale(1.2); } }
+        .rolling { animation: shake 0.1s infinite; opacity: 0.5; filter: blur(2px); }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } 100% { transform: translate(2px, -2px); } }
+        .critical { color: var(--crit-purple) !important; text-shadow: 0 0 25px #a020f0 !important; animation: pulse 0.5s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+        /* Corpo */
+        .body-canvas { display: flex; justify-content: center; align-items: center; position: relative; height: 280px; }
+        .mannequin { height: 240px; }
+        .side-ctrls { position: absolute; display: flex; flex-direction: column; gap: 8px; }
+        .m-box { background: #000; border: 1px solid var(--gold); padding: 4px; border-radius: 5px; text-align: center; width: 60px; font-size: 0.6rem; }
+        .b-m { background: #400; color: #fff; border: 1px solid var(--gold); width: 22px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -50,31 +60,23 @@
         <div class="banner"><h1>RPGS MALÉFICOS DO REISS</h1></div>
         <div class="tabs">
             <div class="tab active" onclick="t('tab-corpo', this)">CORPO</div>
+            <div class="tab" onclick="t('tab-itens', this)">ITENS</div>
             <div class="tab" onclick="t('tab-dados', this)">DADOS</div>
             <div class="tab" onclick="t('tab-notas', this)">NOTAS</div>
         </div>
+        
         <div class="main-content">
             <div id="tab-corpo" class="page active">
                 <div class="glass">
                     <center>❤️ VIDA: <span id="ht">100</span>%</center>
                     <div class="hp-bar"><div id="hp-fill"></div></div>
-                    
                     <div class="body-canvas">
                         <div class="side-ctrls" style="left:0">
                             <div class="m-box">CAB<br><button class="b-m" onclick="u('h',-1)">-</button> <span id="h">10</span> <button class="b-m" onclick="u('h',1)">+</button></div>
                             <div class="m-box">B.E<br><button class="b-m" onclick="u('le',-1)">-</button> <span id="le">10</span> <button class="b-m" onclick="u('le',1)">+</button></div>
                             <div class="m-box">P.E<br><button class="b-m" onclick="u('pe',-1)">-</button> <span id="pe">10</span> <button class="b-m" onclick="u('pe',1)">+</button></div>
                         </div>
-                        
-                        <svg class="mannequin" viewBox="0 0 100 200">
-                            <circle cx="50" cy="30" r="15" fill="#8d6e63"/>
-                            <rect x="35" y="48" width="30" height="70" fill="#8d6e63"/>
-                            <rect x="15" y="50" width="15" height="50" fill="#8d6e63"/>
-                            <rect x="70" y="50" width="15" height="50" fill="#8d6e63"/>
-                            <rect x="35" y="125" width="12" height="60" fill="#8d6e63"/>
-                            <rect x="53" y="125" width="12" height="60" fill="#8d6e63"/>
-                        </svg>
-
+                        <svg class="mannequin" viewBox="0 0 100 200"><circle cx="50" cy="30" r="15" fill="#8d6e63"/><rect x="35" y="48" width="30" height="70" fill="#8d6e63"/><rect x="15" y="50" width="15" height="50" fill="#8d6e63"/><rect x="70" y="50" width="15" height="50" fill="#8d6e63"/><rect x="35" y="125" width="12" height="60" fill="#8d6e63"/><rect x="53" y="125" width="12" height="60" fill="#8d6e63"/></svg>
                         <div class="side-ctrls" style="right:0">
                             <div class="m-box">TRON<br><button class="b-m" onclick="u('t',-1)">-</button> <span id="t">10</span> <button class="b-m" onclick="u('t',1)">+</button></div>
                             <div class="m-box">B.D<br><button class="b-m" onclick="u('rd',-1)">-</button> <span id="rd">10</span> <button class="b-m" onclick="u('rd',1)">+</button></div>
@@ -84,26 +86,46 @@
                 </div>
             </div>
 
+            <div id="tab-itens" class="page">
+                <div class="glass">
+                    <center style="color:var(--gold); font-weight:bold; margin-bottom:10px;">🛡️ INVENTÁRIO</center>
+                    <div class="inv-grid">
+                        <div class="inv-slots">
+                            <div class="slot">🪖 CABEÇA</div> <div class="slot">🛡️ PEITO</div>
+                            <div class="slot">👖 PERNAS</div> <div class="slot">🥾 PÉS</div>
+                            <div class="slot">⚔️ ARMA L</div> <div class="slot">🏹 ARMA R</div>
+                        </div>
+                        <div class="buff-list">
+                            <center style="font-size:0.6rem; color:var(--gold)">BUFFS (1-100)</center>
+                            <div class="buff-item">FOR: <input type="number" class="buff-input" value="1"></div>
+                            <div class="buff-item">DEF: <input type="number" class="buff-input" value="1"></div>
+                            <div class="buff-item">AGI: <input type="number" class="buff-input" value="1"></div>
+                            <div class="buff-item">SOR: <input type="number" class="buff-input" value="1"></div>
+                            <div class="buff-item">MAG: <input type="number" class="buff-input" value="1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-dados" class="page">
                 <div class="glass">
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 1;"><label>Dados</label><input type="number" id="q" class="in-box" value="1"></div>
-                        <div style="flex: 1;"><label>Modif.</label><input type="number" id="m" class="in-box" value="0"></div>
+                    <div style="display: flex; gap: 8px;">
+                        <div style="flex: 1;"><label style="font-size:0.7rem">Qtd.</label><input type="number" id="q" class="in-box" value="1"></div>
+                        <div style="flex: 1;"><label style="font-size:0.7rem">Mod.</label><input type="number" id="m" class="in-box" value="0"></div>
                     </div>
-                    <label>Tipo de Dado</label>
                     <select id="d" class="in-box">
                         <option value="2">D2</option><option value="4">D4</option><option value="6">D6</option>
                         <option value="8">D8</option><option value="10">D10</option><option value="12">D12</option>
                         <option value="20" selected>D20</option><option value="100">D100</option>
                     </select>
-                    <button class="btn-r" onclick="rolar()">GIRAR 🎲</button>
+                    <button class="btn-r" onclick="rolarAnim()">GIRAR 🎲</button>
                     <h1 id="res">0</h1>
                 </div>
             </div>
-
+            
             <div id="tab-notas" class="page">
                 <div class="glass" style="flex:1; display:flex; flex-direction:column;">
-                    <textarea id="nt" class="in-box" style="flex:1; resize:none" placeholder="Notas do Reiss..."></textarea>
+                    <textarea id="nt" class="in-box" style="flex:1; resize:none" placeholder="Anotações..."></textarea>
                     <button class="btn-r" onclick="save()">SALVAR 📜</button>
                 </div>
             </div>
@@ -112,14 +134,12 @@
 
     <script>
         let p = {h:10, t:10, le:10, rd:10, pe:10, pd:10};
-        
         function t(id, e) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             e.classList.add('active');
         }
-
         function u(m, v) {
             if(p[m]+v >= 0 && p[m]+v <= 10) {
                 p[m]+=v; document.getElementById(m).innerText = p[m];
@@ -129,8 +149,24 @@
                 document.getElementById('ht').innerText = x;
             }
         }
-
-        function rolar() {
+        function rolarAnim() {
+            let d = parseInt(document.getElementById('d').value);
+            let resDisplay = document.getElementById('res');
+            resDisplay.classList.add('rolling');
+            resDisplay.classList.remove('critical');
+            
+            let count = 0;
+            let interval = setInterval(() => {
+                resDisplay.innerText = Math.floor(Math.random() * d) + 1;
+                count++;
+                if (count > 10) {
+                    clearInterval(interval);
+                    resDisplay.classList.remove('rolling');
+                    rolarFinal();
+                }
+            }, 50);
+        }
+        function rolarFinal() {
             let s = 0; 
             let q = parseInt(document.getElementById('q').value) || 1; 
             let d = parseInt(document.getElementById('d').value);
@@ -141,16 +177,13 @@
             for(let i=0; i<q; i++) {
                 let r1 = Math.floor(Math.random()*d)+1;
                 let r2 = Math.floor(Math.random()*d)+1;
-                let finalR = Math.max(r1, r2); // Sorte de protagonista
+                let finalR = Math.max(r1, r2);
                 if(finalR === d) isCrit = true;
                 s += finalR;
             }
-
             resDisplay.innerText = s + mod;
             if(isCrit) resDisplay.classList.add('critical');
-            else resDisplay.classList.remove('critical');
         }
-
         function save() { localStorage.setItem('rpg_nt', document.getElementById('nt').value); alert('Salvo!'); }
         window.onload = () => { if(localStorage.getItem('rpg_nt')) document.getElementById('nt').value = localStorage.getItem('rpg_nt'); }
     </script>
