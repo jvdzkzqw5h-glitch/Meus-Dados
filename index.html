@@ -28,12 +28,16 @@
         .hp-bar { width: 100%; height: 20px; background: #222; border: 1px solid var(--gold); border-radius: 10px; overflow: hidden; margin: 10px 0; }
         #hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, #900, #27ae60); transition: 0.4s; }
         
+        .body-canvas { display: flex; justify-content: center; align-items: center; position: relative; height: 300px; margin-top: 10px; }
+        .mannequin { height: 260px; filter: drop-shadow(0 0 10px #000); }
+        .side-ctrls { position: absolute; display: flex; flex-direction: column; gap: 15px; }
+        .m-box { background: #000; border: 1px solid var(--gold); padding: 5px; border-radius: 5px; text-align: center; width: 65px; font-size: 0.6rem; }
+        .b-m { background: #400; color: #fff; border: 1px solid var(--gold); width: 22px; cursor: pointer; border-radius: 3px; }
+
         .in-box { width: 100%; padding: 10px; background: #000; border: 1px solid var(--gold); color: #fff; margin: 5px 0; box-sizing: border-box; border-radius: 5px; }
         .btn-r { width: 100%; padding: 15px; background: var(--dark-red); color: var(--gold); border: 1px solid var(--gold); font-weight: bold; margin-top: 10px; border-radius: 5px; text-transform: uppercase; }
         
         #res { text-align:center; font-size:5rem; color:var(--gold); margin-top:20px; transition: 0.3s; text-shadow: 2px 2px 15px #000; }
-        
-        /* COR DO CRÍTICO AGORA ROXA */
         .critical { color: var(--crit-purple) !important; text-shadow: 0 0 25px #a020f0 !important; transform: scale(1.2); animation: pulse 0.5s infinite alternate; }
         
         @keyframes pulse { from { transform: scale(1.1); } to { transform: scale(1.25); } }
@@ -43,18 +47,31 @@
     <div class="app-container">
         <div class="banner"><h1>RPGS MALÉFICOS DO REISS</h1></div>
         <div class="tabs">
-            <div class="tab" onclick="t('tab-corpo', this)">CORPO</div>
-            <div class="tab active" onclick="t('tab-dados', this)">DADOS</div>
+            <div class="tab active" onclick="t('tab-corpo', this)">CORPO</div>
+            <div class="tab" onclick="t('tab-dados', this)">DADOS</div>
             <div class="tab" onclick="t('tab-notas', this)">NOTAS</div>
         </div>
         <div class="main-content">
-            <div id="tab-corpo" class="page">
+            <div id="tab-corpo" class="page active">
                 <div class="glass">
                     <center>❤️ VIDA: <span id="ht">100</span>%</center>
                     <div class="hp-bar"><div id="hp-fill"></div></div>
+                    <div class="body-canvas">
+                        <div class="side-ctrls" style="left:0">
+                            <div class="m-box">CAB<br><button class="b-m" onclick="u('h',-1)">-</button> <span id="h">10</span> <button class="b-m" onclick="u('h',1)">+</button></div>
+                            <div class="m-box">B.E<br><button class="b-m" onclick="u('le',-1)">-</button> <span id="le">10</span> <button class="b-m" onclick="u('le',1)">+</button></div>
+                            <div class="m-box">P.E<br><button class="b-m" onclick="u('pe',-1)">-</button> <span id="pe">10</span> <button class="b-m" onclick="u('pe',1)">+</button></div>
+                        </div>
+                        <svg class="mannequin" viewBox="0 0 100 200"><circle cx="50" cy="30" r="15" fill="#8d6e63"/><rect x="35" y="48" width="30" height="70" fill="#8d6e63"/><rect x="15" y="50" width="15" height="50" fill="#8d6e63"/><rect x="70" y="50" width="15" height="50" fill="#8d6e63"/><rect x="35" y="125" width="12" height="60" fill="#8d6e63"/><rect x="53" y="125" width="12" height="60" fill="#8d6e63"/></svg>
+                        <div class="side-ctrls" style="right:0">
+                            <div class="m-box">TRON<br><button class="b-m" onclick="u('t',-1)">-</button> <span id="t">10</span> <button class="b-m" onclick="u('t',1)">+</button></div>
+                            <div class="m-box">B.D<br><button class="b-m" onclick="u('rd',-1)">-</button> <span id="rd">10</span> <button class="b-m" onclick="u('rd',1)">+</button></div>
+                            <div class="m-box">P.D<br><button class="b-m" onclick="u('pd',-1)">-</button> <span id="pd">10</span> <button class="b-m" onclick="u('pd',1)">+</button></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="tab-dados" class="page active">
+            <div id="tab-dados" class="page">
                 <div class="glass">
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;"><label>Dados</label><input type="number" id="q" class="in-box" value="1"></div>
@@ -86,6 +103,15 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             e.classList.add('active');
         }
+        function u(m, v) {
+            if(p[m]+v >= 0 && p[m]+v <= 10) {
+                p[m]+=v; document.getElementById(m).innerText = p[m];
+                let c = Object.values(p).reduce((a,b)=>a+b,0);
+                let x = Math.round((c/60)*100);
+                document.getElementById('hp-fill').style.width = x+"%";
+                document.getElementById('ht').innerText = x;
+            }
+        }
         function rolar() {
             let s = 0; 
             let q = parseInt(document.getElementById('q').value) || 1; 
@@ -93,7 +119,6 @@
             let mod = parseInt(document.getElementById('m').value) || 0;
             let resDisplay = document.getElementById('res');
             let isCrit = false;
-
             for(let i=0; i<q; i++) {
                 let r1 = Math.floor(Math.random()*d)+1;
                 let r2 = Math.floor(Math.random()*d)+1;
@@ -101,11 +126,12 @@
                 if(finalR === d) isCrit = true;
                 s += finalR;
             }
-
             resDisplay.innerText = s + mod;
             if(isCrit) resDisplay.classList.add('critical');
             else resDisplay.classList.remove('critical');
         }
+        function save() { localStorage.setItem('rpg_nt', document.getElementById('nt').value); alert('Salvo!'); }
+        window.onload = () => { if(localStorage.getItem('rpg_nt')) document.getElementById('nt').value = localStorage.getItem('rpg_nt'); }
     </script>
 </body>
 </html>
